@@ -10,6 +10,7 @@ import ftn.sbnz.banhammer.web.dto.UserInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getUsers(){
         List<User> users = userService.findAll();
         List<UserDTO> userDTOS = new ArrayList<>();
@@ -45,6 +47,7 @@ public class UserController {
     }
 
     @RequestMapping(method = RequestMethod.GET, path = "/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<?> getUser(@PathVariable Long id){
         User user = userService.findOne(id);
 
