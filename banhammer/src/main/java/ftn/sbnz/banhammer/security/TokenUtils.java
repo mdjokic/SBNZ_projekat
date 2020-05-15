@@ -34,7 +34,7 @@ public class TokenUtils {
         claims.put("created", new Date(System.currentTimeMillis()));
         return Jwts.builder().setClaims(claims)
                 .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME * 1000))
-                .signWith(SignatureAlgorithm.HS512, SECRET).compact();
+                .signWith(SIGNATURE_ALGORITHM, SECRET).compact();
     }
 
     public String getUsernameFromToken(String token) {
