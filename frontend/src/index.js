@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import {setupInterceptors} from './interceptors/tokenInterceptors'
+
+setupInterceptors();
 
 ReactDOM.render(
   <React.StrictMode>
