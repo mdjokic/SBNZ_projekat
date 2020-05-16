@@ -6,6 +6,8 @@ import ftn.sbnz.banhammer.model.User;
 import ftn.sbnz.banhammer.repository.MatchInfoRepository;
 import ftn.sbnz.banhammer.repository.UserRepository;
 import ftn.sbnz.banhammer.service.MatchService;
+import org.kie.api.runtime.KieContainer;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,13 +25,18 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     MatchInfoRepository matchInfoRepository;
 
+    @Autowired
+    KieContainer kieContainer;
+
     @Override
     public Runnable simulateMatchEvent(String userId, int finishedChance, int noReportChance) {
         return () -> {
-            MatchInfo random = getRandomMatchInfo(userId, finishedChance, noReportChance);
-            matchInfoRepository.save(random);
-            System.out.println(random);
-            System.out.println();
+            KieSession kieSession = kieContainer.newKieSession();
+            MatchInfo randomMatchInfo = getRandomMatchInfo(userId, finishedChance, noReportChance);
+
+
+
+            matchInfoRepository.save(randomMatchInfo);
         };
     }
 
