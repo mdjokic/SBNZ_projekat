@@ -1,14 +1,14 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import Login from './components/Login';
-import Admin from './components/Admin';
+import Dashboard from './components/Dashboard';
 
 function App() {
   return (
     <Router>
       <Switch>
         <Route path={'(|/login)'} exact component={Login}/>
-        <Route path={'/admin'} exact component={Admin}/>
+        <Route path={'/dashboard'} exact component={Dashboard}/>
       </Switch>
     </Router>
   );

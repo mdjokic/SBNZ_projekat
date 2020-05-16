@@ -3,6 +3,8 @@ package ftn.sbnz.banhammer.service.implementation;
 import ftn.sbnz.banhammer.model.MatchInfo;
 import ftn.sbnz.banhammer.model.Report;
 import ftn.sbnz.banhammer.service.SimulationService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,13 +14,13 @@ import java.util.Random;
 @Service
 public class SimulationServiceImpl implements SimulationService {
 
-
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
 
     @Override
     public Runnable simulateMatchEvent(String userId, int finishedChance, int noReportChance) {
         return () -> {
-            System.out.println(getRandomMatchInfo(userId, finishedChance, noReportChance));
-            System.out.println();
+            simpMessagingTemplate.convertAndSend("/games", getRandomMatchInfo(userId, finishedChance, noReportChance));
         };
     }
 
