@@ -1,6 +1,6 @@
 package ftn.sbnz.banhammer.web.controller;
 
-import ftn.sbnz.banhammer.service.implementation.SimulationServiceImpl;
+import ftn.sbnz.banhammer.service.implementation.MatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class MatchController {
     TaskScheduler taskScheduler;
 
     @Autowired
-    SimulationServiceImpl simulationService;
+    MatchServiceImpl simulationService;
 
     ScheduledFuture<?> scheduledFuture;
 
