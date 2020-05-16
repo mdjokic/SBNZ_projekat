@@ -3,6 +3,7 @@ package ftn.sbnz.banhammer.model;
 import lombok.Getter;
 import lombok.Setter;
 
+import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -11,12 +12,18 @@ import java.util.Date;
 
 @Getter
 @Setter
+@Entity
+@Table(name="matches")
 public class MatchInfo {
-    private String id;
+    @Id
+    @GeneratedValue(generator = "matches_seq_gen")
+    @SequenceGenerator(name = "matches_seq_gen", sequenceName = "matches_id_seq", initialValue = 1, allocationSize = 1)
+    private Long id;
     private String userId;
     private boolean finished;
-    private ArrayList<String> chatLog;
+    private String chatLog;
     private Date timestamp;
+    @Enumerated(EnumType.STRING)
     private Report report;
 
     public MatchInfo(){
@@ -24,7 +31,7 @@ public class MatchInfo {
     }
 
     public MatchInfo(String userId, boolean finished,
-                     ArrayList<String> chatLog, Date timestamp, Report report) {
+                     String chatLog, Date timestamp, Report report) {
         this.userId = userId;
         this.finished = finished;
         this.chatLog = chatLog;
@@ -32,8 +39,8 @@ public class MatchInfo {
         this.report = report;
     }
 
-    public MatchInfo(String id, String userId, boolean finished,
-                     ArrayList<String> chatLog, Date timestamp, Report report) {
+    public MatchInfo(Long id, String userId, boolean finished,
+                     String chatLog, Date timestamp, Report report) {
         this.id = id;
         this.userId = userId;
         this.finished = finished;
