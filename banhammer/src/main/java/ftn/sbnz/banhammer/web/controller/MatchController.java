@@ -1,5 +1,7 @@
 package ftn.sbnz.banhammer.web.controller;
 
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.service.MatchService;
 import ftn.sbnz.banhammer.service.implementation.MatchServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -14,6 +16,8 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
 @RestController
@@ -21,7 +25,10 @@ import java.util.concurrent.ScheduledFuture;
 @CrossOrigin()
 public class MatchController {
 
-    public static final long FIXED_RATE = 1000;
+    public static final long FIXED_RATE = 5000;
+
+    @Autowired
+    MatchService matchService;
 
     @Qualifier("threadPoolTaskScheduler")
     @Autowired
@@ -43,12 +50,17 @@ public class MatchController {
     }
 
     @MessageMapping("/stop")
-    @SendTo("/games")
+    @SendTo("/topic/messages")
     ResponseEntity<Void> stop() {
         try {
             scheduledFuture.cancel(false);
         }catch (NullPointerException e){}
         return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    @RequestMapping("/matches")
+    public List<MatchInfo> tenLatestMatches(){
+        return matchService.findLatest();
     }
 
 }

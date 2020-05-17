@@ -9,12 +9,14 @@ import ftn.sbnz.banhammer.service.MatchService;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -28,15 +30,17 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     KieContainer kieContainer;
 
+    @Autowired
+    SimpMessagingTemplate simpMessagingTemplate;
+
+
     @Override
     public Runnable simulateMatchEvent(String userId, int finishedChance, int noReportChance) {
         return () -> {
             KieSession kieSession = kieContainer.newKieSession();
             MatchInfo randomMatchInfo = getRandomMatchInfo(userId, finishedChance, noReportChance);
-
-
-
-            matchInfoRepository.save(randomMatchInfo);
+            randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
+            simpMessagingTemplate.convertAndSend("/topic/messages", randomMatchInfo);
         };
     }
 
@@ -48,6 +52,13 @@ public class MatchServiceImpl implements MatchService {
     @Override
     public List<MatchInfo> findAll() {
         return matchInfoRepository.findAll();
+    }
+
+    @Override
+    public List<MatchInfo> findLatest(){
+        Pageable pageable = PageRequest.of(0, 10, Sort.Direction.DESC, "timestamp");
+        Page<MatchInfo> bottomPage = matchInfoRepository.findAll(pageable);
+        return bottomPage.getContent();
     }
 
     @Override
