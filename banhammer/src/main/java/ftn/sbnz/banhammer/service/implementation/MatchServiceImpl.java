@@ -1,20 +1,17 @@
 package ftn.sbnz.banhammer.service.implementation;
 
-import ftn.sbnz.banhammer.model.MatchInfo;
-import ftn.sbnz.banhammer.model.Report;
-import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.*;
 import ftn.sbnz.banhammer.repository.MatchInfoRepository;
 import ftn.sbnz.banhammer.repository.UserRepository;
 import ftn.sbnz.banhammer.service.MatchService;
+import javafx.css.Match;
+import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 @Service
 public class MatchServiceImpl implements MatchService {
@@ -33,10 +30,27 @@ public class MatchServiceImpl implements MatchService {
         return () -> {
             KieSession kieSession = kieContainer.newKieSession();
             MatchInfo randomMatchInfo = getRandomMatchInfo(userId, finishedChance, noReportChance);
+            User user = userRepository.findUserByUsername(randomMatchInfo.getUserId()).get();
 
+            if(user.getPunishment() == Punishment.PERMANENT_SUSPENSION){
+                return;
+            }
 
+            ChatLogAnalyzer  chatLogAnalyzer = new ChatLogAnalyzer();
 
+            MatchHistory matchHistory = new MatchHistory(
+                    (ArrayList) matchInfoRepository.findTop5ByUserIdOrderByTimestampDesc(user.username));
+
+            kieSession.insert(new MatchEvent(randomMatchInfo));
+            kieSession.insert(user);
+            kieSession.insert(matchHistory);
+            kieSession.insert(chatLogAnalyzer);
+            kieSession.fireAllRules();
+            Collection<User> users = (Collection<User>) kieSession.getObjects(new ClassObjectFilter(User.class));
+
+            userRepository.save(users.iterator().next());
             matchInfoRepository.save(randomMatchInfo);
+            System.out.println();
         };
     }
 
