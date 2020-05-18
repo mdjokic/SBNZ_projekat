@@ -1,0 +1,21 @@
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.model.Report;
+import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.MatchHistory;
+
+
+rule "Match played with reports but no reports and leaving in match history"
+    when
+        MatchEvent($info: matchInfo, $info.report != Report.NONE)
+        $u: User()
+        MatchHistory($history: history)
+        not MatchInfo(report != Report.NONE || finished == false) from $history
+    then
+        System.out.println("REPORT - NO REPORT IN MATCH HISTORY");
+        $u.setPunishment(Punishment.NONE);
+        insert($u);
+        drools.halt();
+end

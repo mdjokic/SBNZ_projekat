@@ -1,0 +1,97 @@
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.model.Report;
+import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.ChatLogAnalyzer;
+import ftn.sbnz.banhammer.model.MatchHistory;
+
+declare AnalyzeChatLog
+    for: String
+end
+
+declare Punishment
+    for: String
+end
+
+declare IncreaseThreat end
+
+rule "Match played with player reported for flaming and any report in match history"
+    when
+        $match: MatchEvent($info: matchInfo, $info.report == Report.OFFENSIVE_LANGUAGE, $info.finished == true)
+        $u: User()
+        MatchHistory($history: history)
+        MatchInfo(report != Report.NONE) from $history
+        not AnalyzeChatLog(for == "flame")
+    then
+        System.out.println("FLAME REPORT - REPORT IN MATCH HISTORY");
+        System.out.println("PERFORMING ANALYSIS FOR FLAME FOR " + $u.username);
+        insert(new AnalyzeChatLog("flame"));
+end
+
+rule "Chat log analysis for flame true"
+    when
+        AnalyzeChatLog(for == "flame")
+        ChatLogAnalyzer(flame == true)
+        $u: User()
+    then
+        System.out.println("ANALYSIS FOR FLAME IS TRUE FOR " + $u.username);
+        insert(new Punishment("flame"));
+end
+
+rule "Chat log analysis for flame false"
+    when
+        AnalyzeChatLog(for == "flame")
+        ChatLogAnalyzer(flame == false)
+        $u: User()
+    then
+        System.out.println("ANALYSIS FOR FLAME IS FALSE FOR " + $u.username);
+        $u.setPunishment(Punishment.NONE);
+        insert($u);
+        drools.halt();
+end
+
+rule "Punish for flame threat none"
+    when
+        Punishment(for == "flame")
+        $u: User(threatLevel == ThreatLevel.NONE)
+    then
+        System.out.println("ISSUING WARNING FOR " + $u.username + " FOR FLAME");
+        $u.setPunishment(Punishment.WARNING);
+        update($u);
+        insert(new IncreaseThreat());
+end
+
+rule "Punish for flame threat low"
+    when
+        Punishment(for == "flame")
+        $u: User(threatLevel == ThreatLevel.LOW)
+    then
+        System.out.println("ISSUING 3 DAY CHAT BAN FOR " + $u.username + " FOR FLAME");
+        $u.setPunishment(Punishment.CHAT_BAN_3_DAYS);
+        update($u);
+        insert(new IncreaseThreat());
+end
+
+rule "Punish for flame threat medium"
+    when
+        Punishment(for == "flame")
+        $u: User(threatLevel == ThreatLevel.MEDIUM)
+    then
+        System.out.println("ISSUING 7 DAY CHAT BAN FOR " + $u.username + " FOR FLAME");
+        $u.setPunishment(Punishment.CHAT_BAN_7_DAYS);
+        update($u);
+        insert(new IncreaseThreat());
+end
+
+rule "Punish for flame threat high"
+    when
+        Punishment(for == "flame")
+        $u: User(threatLevel == ThreatLevel.HIGH)
+    then
+        System.out.println("ISSUING PERMANENT SUSPENSION FOR " + $u.username + " FOR FLAME");
+        $u.setPunishment(Punishment.PERMANENT_SUSPENSION);
+        update($u);
+        insert(new IncreaseThreat());
+end
