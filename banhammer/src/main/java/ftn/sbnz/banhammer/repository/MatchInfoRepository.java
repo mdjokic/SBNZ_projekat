@@ -9,4 +9,6 @@ public interface MatchInfoRepository extends JpaRepository<MatchInfo, Long> {
     List<MatchInfo> findAllByUserIdOrderByTimestampDesc(String userId);
 
     List<MatchInfo> findTop5ByUserIdOrderByTimestampDesc(String userId);
+
+    List<MatchInfo> findTop20ByUserIdOrderByTimestampDesc(String userId);
 }

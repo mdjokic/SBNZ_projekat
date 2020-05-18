@@ -66,7 +66,7 @@ public class MatchServiceImpl implements MatchService {
 
     @Override
     public List<MatchInfo> findAllByUserId(String userId) {
-        return matchInfoRepository.findAllByUserIdOrderByTimestampDesc(userId);
+        return matchInfoRepository.findTop20ByUserIdOrderByTimestampDesc(userId);
     }
 
     @Override
