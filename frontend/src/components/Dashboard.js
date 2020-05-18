@@ -9,6 +9,12 @@ var stompClient = null;
 const Dashboard = () => {
     const[latestMatches, setLatestMatches] = useState([]);
     const[started, setStarted] = useState(false);
+    const[simulationParams, setSimulationParams] = useState({
+        userId: null,
+        finishedChance: 90,
+        noReportChance: 50,
+        intervalBetweenMatches: 3000
+    })
     useEffect(() => {
         window.addEventListener("unload", () => handleStop());
         MatchService.getLatest()
@@ -23,10 +29,20 @@ const Dashboard = () => {
             stompClient.subscribe('/topic/messages', function(messageOutput){
                 updateMatches(messageOutput);
             });
-            stompClient.send("/ws/start");
+            stompClient.send("/ws/start", {}, JSON.stringify(simulationParams));
             setStarted(true);
         });
     }
+    
+    const handleChange = (name) => (event) =>{
+        const val = event.target.value;
+        if(name === "userId" && val.trim() === ""){
+            setSimulationParams({...simulationParams, [name]: null})
+            return;
+        }
+        setSimulationParams({...simulationParams, [name]: val});
+    }
+
     const handleStop = () =>{
         if(stompClient === null){
             return;
@@ -96,10 +112,52 @@ const Dashboard = () => {
                                     </tbody>
                                 </table>
                             </div>
-                            <div style={{textAlign:"center"}}className="column is-centered">
-                                {
-                                    started ? <button className="button is-info is-medium " onClick={handleStop}>Stop</button> : <button className="button is-info is-medium" onClick={handleStart}>Start simulation</button>
-                                }
+                            <div style={{textAlign:"center"}}className="column">
+                                <div className="columns">
+                                    <div className="column">                     
+                                        {
+                                            started ? <button className="button is-info is-medium " onClick={handleStop}>Stop</button> : <button className="button is-info is-medium" onClick={handleStart}>Start simulation</button>
+                                        }
+                                    </div>
+                                </div>
+                                <div className="columns">
+                                    <div className="column">
+                                        <div className="field">
+                                            <label className="label">UserId</label>
+                                            <div className="control">
+                                                <input placeholder="UserId" className="input" onChange={handleChange("userId")}/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="column">
+                                        <div className="field">
+                                            <label className="label">Finished Chance</label>
+                                            <div className="control">
+                                                <input placeholder="Finished Chance" className="input" value={simulationParams.finishedChance} onChange={handleChange("finishedChance")} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="columns">
+                                    <div className="column">
+                                        <div className="field">
+                                            <label className="label">No report Chance</label>
+                                            <div className="control">
+                                                <input placeholder="No report Chance" className="input" value={simulationParams.noReportChance} onChange={handleChange("noReportChance")}/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="column">
+                                        <div className="field">
+                                            <label className="label">Interval between matches</label>
+                                            <div className="control">
+                                                <input placeholder="Interval between matches" className="input" value={simulationParams.intervalBetweenMatches} onChange={handleChange("intervalBetweenMatches")} />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
                             </div>
                         </div>
                     </div>
