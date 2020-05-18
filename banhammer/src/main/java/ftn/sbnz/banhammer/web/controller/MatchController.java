@@ -76,4 +76,10 @@ public class MatchController {
         return latestMatchesDTO;
     }
 
+    @RequestMapping(value = "/matches/reset", method = RequestMethod.GET)
+    public ResponseEntity<Void> reset(){
+        matchService.reset();
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
 }
