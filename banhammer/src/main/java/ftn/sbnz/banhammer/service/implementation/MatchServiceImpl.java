@@ -16,6 +16,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.*;
 
 @Service
@@ -39,17 +40,19 @@ public class MatchServiceImpl implements MatchService {
         return () -> {
             KieSession kieSession = kieContainer.newKieSession();
             MatchInfo randomMatchInfo = getRandomMatchInfo(userId, finishedChance, noReportChance);
-            randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
             User user = userRepository.findUserByUsername(randomMatchInfo.getUserId()).get();
 
             if(user.getPunishment() == Punishment.PERMANENT_SUSPENSION){
                 return;
             }
 
-            ChatLogAnalyzer  chatLogAnalyzer = new ChatLogAnalyzer();
 
             MatchHistory matchHistory = new MatchHistory(
                     (ArrayList) matchInfoRepository.findTop5ByUserIdOrderByTimestampDesc(user.username));
+
+            randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
+
+            ChatLogAnalyzer  chatLogAnalyzer = new ChatLogAnalyzer();
 
             kieSession.insert(new MatchEvent(randomMatchInfo));
             kieSession.insert(user);
@@ -95,6 +98,20 @@ public class MatchServiceImpl implements MatchService {
         return matchInfoRepository.save(matchInfo);
     }
 
+    @Override
+    @Transactional
+    public void reset() {
+        List<User> users = userRepository.findAll();
+
+        for (User u: users) {
+            u.setPunishment(Punishment.NONE);
+            u.setThreatLevel(ThreatLevel.NONE);
+            userRepository.save(u);
+        }
+
+        matchInfoRepository.removeAll();
+    }
+
     private MatchInfo getRandomMatchInfo(String userId, int finishedChance, int noReportChance) {
         Random random = new Random();
 
@@ -104,6 +121,14 @@ public class MatchServiceImpl implements MatchService {
         if (userId == null){
             User u = userRepository.getRandom();
             userId = u.username;
+        }else {
+            Optional<User> u = userRepository.findUserByUsername(userId);
+            if(u.isEmpty()){
+                User u2 = userRepository.getRandom();
+                userId = u2.username;
+            }else {
+                userId = u.get().username;
+            }
         }
 
         if(random.nextInt(100) < finishedChance){

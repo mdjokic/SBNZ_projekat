@@ -6,19 +6,18 @@ import ftn.sbnz.banhammer.service.MatchService;
 import ftn.sbnz.banhammer.service.UserService;
 import ftn.sbnz.banhammer.service.implementation.MatchServiceImpl;
 import ftn.sbnz.banhammer.web.dto.MatchDTO;
+import ftn.sbnz.banhammer.web.dto.SimulationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.concurrent.ScheduledFuture;
 @CrossOrigin()
 public class MatchController {
 
-    public static final long FIXED_RATE = 3000;
 
     @Autowired
     MatchService matchService;
@@ -47,12 +45,12 @@ public class MatchController {
     ScheduledFuture<?> scheduledFuture;
 
     @MessageMapping("/start")
-    ResponseEntity<Void> start() {
+    ResponseEntity<Void> start(SimulationDTO simulationDTO) {
         if(scheduledFuture != null && !scheduledFuture.isCancelled()){
             return new ResponseEntity<Void>(HttpStatus.OK);
         }
         scheduledFuture = taskScheduler.scheduleAtFixedRate(
-                simulationService.simulateMatchEvent(null, 90, 50), FIXED_RATE);
+                simulationService.simulateMatchEvent(simulationDTO.getUserId(), simulationDTO.getFinishedChance(), simulationDTO.getNoReportChance()), simulationDTO.getIntervalBetweenMatches());
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
@@ -76,6 +74,12 @@ public class MatchController {
 
         }
         return latestMatchesDTO;
+    }
+
+    @RequestMapping(value = "/matches/reset", method = RequestMethod.GET)
+    public ResponseEntity<Void> reset(){
+        matchService.reset();
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

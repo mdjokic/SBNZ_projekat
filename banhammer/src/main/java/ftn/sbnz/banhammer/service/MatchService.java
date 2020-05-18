@@ -18,4 +18,6 @@ public interface MatchService {
 
     MatchInfo save(MatchInfo matchInfo);
 
+    void reset();
+
 }
