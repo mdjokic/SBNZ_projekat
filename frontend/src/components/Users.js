@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import Navbar from '../shared/Navbar';
 
 const Users = () => {
 
@@ -12,6 +13,8 @@ const Users = () => {
     }, [])
 
     return (
+        <div>
+        <Navbar />
         <section className="hero is-info is-fullheight">
             <div className="hero-head">
                 <div className="container is-centered" style={{ marginTop: 16, width: 640 }}>
@@ -48,7 +51,7 @@ const Users = () => {
             </div>
 
         </section>
-
+    </div>
     )
 }
 

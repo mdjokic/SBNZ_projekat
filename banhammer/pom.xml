@@ -65,6 +65,10 @@
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.drools</groupId>
 			<artifactId>drools-core</artifactId>
 			<version>7.17.0.Final</version>
@@ -85,8 +89,6 @@
 			<type>jar</type>
 			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
-
-
 	</dependencies>
 
 	<build>

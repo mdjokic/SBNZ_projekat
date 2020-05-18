@@ -12,6 +12,8 @@ public interface MatchService {
 
     List<MatchInfo> findAll();
 
+    List<MatchInfo> findLatest();
+
     List<MatchInfo> findAllByUserId(String userId);
 
     MatchInfo save(MatchInfo matchInfo);

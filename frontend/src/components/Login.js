@@ -14,7 +14,7 @@ const Login = () => {
     const handleSubmit = (event) => {
         event.preventDefault();
         AuthenticationService.authenticate(user)
-        .then(() => history.push("/admin"))
+        .then(() => history.push("/dashboard"))
         .catch(() => {});
         return;
     }
