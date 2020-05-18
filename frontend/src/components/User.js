@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import moment from 'moment';
+import Navbar from '../shared/Navbar';
 
 const User = () => {
 
@@ -17,6 +18,8 @@ const User = () => {
     }, [id])
 
     return (
+        <div>
+        <Navbar />
         <section className="hero is-info is-fullheight">
             <div className="container is-centered" style={{ marginTop: 16, width: 640 }}>
                 <div className="box">
@@ -65,6 +68,7 @@ const User = () => {
 
             </div>
         </section>
+        </div>
     )
 
 }

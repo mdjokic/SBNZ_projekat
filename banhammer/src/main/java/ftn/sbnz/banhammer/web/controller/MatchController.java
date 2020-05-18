@@ -1,8 +1,11 @@
 package ftn.sbnz.banhammer.web.controller;
 
 import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.User;
 import ftn.sbnz.banhammer.service.MatchService;
+import ftn.sbnz.banhammer.service.UserService;
 import ftn.sbnz.banhammer.service.implementation.MatchServiceImpl;
+import ftn.sbnz.banhammer.web.dto.MatchDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledFuture;
 
@@ -33,6 +37,9 @@ public class MatchController {
     @Qualifier("threadPoolTaskScheduler")
     @Autowired
     TaskScheduler taskScheduler;
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     MatchServiceImpl simulationService;
@@ -59,8 +66,16 @@ public class MatchController {
     }
 
     @RequestMapping("/matches")
-    public List<MatchInfo> tenLatestMatches(){
-        return matchService.findLatest();
+    public List<MatchDTO> tenLatestMatches() {
+        List<MatchInfo> latestMatches =  matchService.findLatest();
+        List<MatchDTO> latestMatchesDTO = new ArrayList<>();
+        User user = null;
+        for (MatchInfo matchInfo: latestMatches) {
+            user = userService.findOne(matchInfo.getUserId());
+            latestMatchesDTO.add(new MatchDTO(matchInfo, user));
+
+        }
+        return latestMatchesDTO;
     }
 
 }

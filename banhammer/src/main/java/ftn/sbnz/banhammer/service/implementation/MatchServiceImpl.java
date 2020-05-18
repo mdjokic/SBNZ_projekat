@@ -41,7 +41,6 @@ public class MatchServiceImpl implements MatchService {
             MatchInfo randomMatchInfo = getRandomMatchInfo(userId, finishedChance, noReportChance);
             randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
             User user = userRepository.findUserByUsername(randomMatchInfo.getUserId()).get();
-            ThreatLevel oldThreatLevel = user.getThreatLevel();
 
             if(user.getPunishment() == Punishment.PERMANENT_SUSPENSION){
                 return;
@@ -60,7 +59,7 @@ public class MatchServiceImpl implements MatchService {
             Collection<User> users = (Collection<User>) kieSession.getObjects(new ClassObjectFilter(User.class));
             user = users.iterator().next();
 
-            MatchDTO matchDTO = new MatchDTO(randomMatchInfo, user, oldThreatLevel);
+            MatchDTO matchDTO = new MatchDTO(randomMatchInfo, user);
             simpMessagingTemplate.convertAndSend("/topic/messages", matchDTO);
 
             userRepository.save(user);

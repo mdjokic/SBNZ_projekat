@@ -77,16 +77,20 @@ const Dashboard = () => {
                                             <th>Date</th>
                                             <th>Finished</th>
                                             <th>Report</th>
+                                            <th>Threat level</th>
+                                            <th>Punishment</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {latestMatches.map((match) => 
                                             <tr key={match.id}>
                                                 <td>{match.id}</td>
-                                                <td>{match.userId}</td>
+                                                <td>{match.usernameId}</td>
                                                 <td>{moment(match.timestamp).format('DD.MM.YYYY HH:mm:ss')}</td>
                                                 <td>{String(match.finished)}</td>
                                                 <td>{match.report}</td>
+                                                <td>{match.threatLevel}</td>
+                                                <td>{match.punishment}</td>
                                             </tr>
                                             )}
                                     </tbody>
