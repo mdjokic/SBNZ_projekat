@@ -28,5 +28,4 @@ rule "Match played with no reports and no leaving"
         System.out.println("NO REPORT");
         $u.setPunishment(Punishment.NONE);
         insert($u);
-        drools.halt();
 end
