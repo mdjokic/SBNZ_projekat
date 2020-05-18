@@ -19,3 +19,14 @@ rule "Match played with reports but no reports and leaving in match history"
         insert($u);
         drools.halt();
 end
+
+rule "Match played with no reports and no leaving"
+    when
+        MatchEvent($info: matchInfo, $info.report == Report.NONE, $info.finished == true)
+        $u: User()
+    then
+        System.out.println("NO REPORT");
+        $u.setPunishment(Punishment.NONE);
+        insert($u);
+        drools.halt();
+end
