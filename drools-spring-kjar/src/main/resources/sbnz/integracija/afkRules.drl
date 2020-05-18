@@ -16,7 +16,7 @@ rule "Match played with player leaving the game and any report in match history"
     when
         $match: MatchEvent($info: matchInfo, $info.finished == false)
         MatchHistory($history: history)
-        MatchInfo(report != Report.NONE) from $history
+        MatchInfo(report != Report.NONE || finished==false) from $history
         not PunishPlayer(forWhat == "afk")
     then
         System.out.println("LEAVING - REPORT IN MATCH HISTORY");
@@ -27,7 +27,7 @@ rule "Match played with player reported for leaving the game and any report in m
     when
         $match: MatchEvent($info: matchInfo, $info.report == Report.LEAVING_THE_GAME)
         MatchHistory($history: history)
-        MatchInfo(report != Report.NONE) from $history
+        MatchInfo(report != Report.NONE || finished==false) from $history
         not PunishPlayer(forWhat == "afk")
     then
         System.out.println("AFK REPORT - REPORT IN MATCH HISTORY");
@@ -38,7 +38,7 @@ rule "Match played with player leaving the game and left the game in match histo
     when
         $match: MatchEvent($info: matchInfo, $info.finished == false)
         MatchHistory($history: history)
-        MatchInfo(report != Report.NONE) from $history
+        MatchInfo(report != Report.NONE || finished==false) from $history
         not PunishPlayer(forWhat == "afk")
     then
         System.out.println("LEAVING - LEAVING IN MATCH HISTORY");
@@ -49,7 +49,7 @@ rule "Match played with player reported for leaving the game and left the game i
     when
         $match: MatchEvent($info: matchInfo, $info.report == Report.LEAVING_THE_GAME)
         MatchHistory($history: history)
-        MatchInfo(report != Report.NONE) from $history
+        MatchInfo(report != Report.NONE || finished==false) from $history
         not PunishPlayer(forWhat == "afk")
     then
         System.out.println("AFK REPORT - LEAVING IN MATCH HISTORY");
