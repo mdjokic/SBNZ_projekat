@@ -25,7 +25,7 @@ import java.util.concurrent.ScheduledFuture;
 @CrossOrigin()
 public class MatchController {
 
-    public static final long FIXED_RATE = 5000;
+    public static final long FIXED_RATE = 3000;
 
     @Autowired
     MatchService matchService;
@@ -45,7 +45,7 @@ public class MatchController {
             return new ResponseEntity<Void>(HttpStatus.OK);
         }
         scheduledFuture = taskScheduler.scheduleAtFixedRate(
-                simulationService.simulateMatchEvent(null, 90, 70), FIXED_RATE);
+                simulationService.simulateMatchEvent(null, 90, 50), FIXED_RATE);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 

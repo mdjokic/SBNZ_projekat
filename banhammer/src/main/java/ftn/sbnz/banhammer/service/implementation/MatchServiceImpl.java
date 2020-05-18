@@ -1,11 +1,11 @@
 package ftn.sbnz.banhammer.service.implementation;
 
-import ftn.sbnz.banhammer.model.MatchInfo;
-import ftn.sbnz.banhammer.model.Report;
-import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.*;
 import ftn.sbnz.banhammer.repository.MatchInfoRepository;
 import ftn.sbnz.banhammer.repository.UserRepository;
 import ftn.sbnz.banhammer.service.MatchService;
+import ftn.sbnz.banhammer.web.dto.MatchDTO;
+import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,32 @@ public class MatchServiceImpl implements MatchService {
             KieSession kieSession = kieContainer.newKieSession();
             MatchInfo randomMatchInfo = getRandomMatchInfo(userId, finishedChance, noReportChance);
             randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
-            simpMessagingTemplate.convertAndSend("/topic/messages", randomMatchInfo);
+            User user = userRepository.findUserByUsername(randomMatchInfo.getUserId()).get();
+            ThreatLevel oldThreatLevel = user.getThreatLevel();
+
+            if(user.getPunishment() == Punishment.PERMANENT_SUSPENSION){
+                return;
+            }
+
+            ChatLogAnalyzer  chatLogAnalyzer = new ChatLogAnalyzer();
+
+            MatchHistory matchHistory = new MatchHistory(
+                    (ArrayList) matchInfoRepository.findTop5ByUserIdOrderByTimestampDesc(user.username));
+
+            kieSession.insert(new MatchEvent(randomMatchInfo));
+            kieSession.insert(user);
+            kieSession.insert(matchHistory);
+            kieSession.insert(chatLogAnalyzer);
+            kieSession.fireAllRules();
+            Collection<User> users = (Collection<User>) kieSession.getObjects(new ClassObjectFilter(User.class));
+            user = users.iterator().next();
+
+            MatchDTO matchDTO = new MatchDTO(randomMatchInfo, user, oldThreatLevel);
+            simpMessagingTemplate.convertAndSend("/topic/messages", matchDTO);
+
+            userRepository.save(user);
+            matchInfoRepository.save(randomMatchInfo);
+            System.out.println();
         };
     }
 
