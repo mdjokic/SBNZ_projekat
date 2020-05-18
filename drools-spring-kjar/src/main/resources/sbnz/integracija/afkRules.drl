@@ -1,0 +1,101 @@
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.model.Report;
+import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.MatchHistory;
+
+declare PunishPlayer
+    forWhat: String
+end
+
+declare IncreaseThreat end
+
+rule "Match played with player leaving the game and any report in match history"
+    when
+        $match: MatchEvent($info: matchInfo, $info.finished == false)
+        MatchHistory($history: history)
+        MatchInfo(report != Report.NONE) from $history
+        not PunishPlayer(forWhat == "afk")
+    then
+        System.out.println("LEAVING - REPORT IN MATCH HISTORY");
+        insert(new PunishPlayer("afk"));
+end
+
+rule "Match played with player reported for leaving the game and any report in match history"
+    when
+        $match: MatchEvent($info: matchInfo, $info.report == Report.LEAVING_THE_GAME)
+        MatchHistory($history: history)
+        MatchInfo(report != Report.NONE) from $history
+        not PunishPlayer(forWhat == "afk")
+    then
+        System.out.println("AFK REPORT - REPORT IN MATCH HISTORY");
+        insert(new PunishPlayer("afk"));
+end
+
+rule "Match played with player leaving the game and left the game in match history"
+    when
+        $match: MatchEvent($info: matchInfo, $info.finished == false)
+        MatchHistory($history: history)
+        MatchInfo(report != Report.NONE) from $history
+        not PunishPlayer(forWhat == "afk")
+    then
+        System.out.println("LEAVING - LEAVING IN MATCH HISTORY");
+        insert(new PunishPlayer("afk"));
+end
+
+rule "Match played with player reported for leaving the game and left the game in match history"
+    when
+        $match: MatchEvent($info: matchInfo, $info.report == Report.LEAVING_THE_GAME)
+        MatchHistory($history: history)
+        MatchInfo(report != Report.NONE) from $history
+        not PunishPlayer(forWhat == "afk")
+    then
+        System.out.println("AFK REPORT - LEAVING IN MATCH HISTORY");
+        insert(new PunishPlayer("afk"));
+end
+
+rule "Punish for afk threat none"
+    when
+        PunishPlayer(forWhat == "afk")
+        $u: User(threatLevel == ThreatLevel.NONE)
+    then
+        System.out.println("ISSUING WARNING FOR " + $u.username + " FOR AFK");
+        $u.setPunishment(Punishment.WARNING);
+        update($u);
+        insert(new IncreaseThreat());
+end
+
+rule "Punish for afk threat low"
+    when
+        PunishPlayer(forWhat == "afk")
+        $u: User(threatLevel == ThreatLevel.LOW)
+    then
+        System.out.println("ISSUING 3 DAY SUSPENSION FOR " + $u.username + " FOR AFK");
+        $u.setPunishment(Punishment.SUSPENSION_3_DAYS);
+        update($u);
+        insert(new IncreaseThreat());
+end
+
+rule "Punish for afk threat medium"
+    when
+        PunishPlayer(forWhat == "afk")
+        $u: User(threatLevel == ThreatLevel.MEDIUM)
+    then
+        System.out.println("ISSUING 7 DAY SUSPENSION FOR " + $u.username + " FOR AFK");
+        $u.setPunishment(Punishment.SUSPENSION_7_DAYS);
+        update($u);
+        insert(new IncreaseThreat());
+end
+
+rule "Punish for afk threat high"
+    when
+        PunishPlayer(forWhat == "afk")
+        $u: User(threatLevel == ThreatLevel.HIGH)
+    then
+        System.out.println("ISSUING PERMANENT SUSPENSION FOR " + $u.username + " FOR AFK");
+        $u.setPunishment(Punishment.PERMANENT_SUSPENSION);
+        update($u);
+        insert(new IncreaseThreat());
+end

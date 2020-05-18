@@ -1,0 +1,56 @@
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.model.Report;
+import ftn.sbnz.banhammer.model.User;
+
+declare PunishPlayer
+    forWhat: String
+end
+
+declare IncreaseThreat end
+
+rule "Increase threat from none to low"
+    when
+        IncreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.NONE)
+    then
+        System.out.println("INCREASING THREAT LEVEL FOR " + $u.username + " TO LOW");
+        $u.setThreatLevel(ThreatLevel.LOW);
+        insert($u);
+        drools.halt();
+end
+
+rule "Increase threat from low to medium"
+    when
+        IncreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.LOW)
+    then
+        System.out.println("INCREASING THREAT LEVEL FOR " + $u.username + " TO MEDIUM");
+        $u.setThreatLevel(ThreatLevel.MEDIUM);
+        insert($u);
+        drools.halt();
+end
+
+
+rule "Increase threat from medium to high"
+    when
+        IncreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.MEDIUM)
+    then
+        System.out.println("INCREASING THREAT LEVEL FOR " + $u.username + " TO HIGH");
+        $u.setThreatLevel(ThreatLevel.HIGH);
+        insert($u);
+        drools.halt();
+end
+
+rule "Increase threat from high"
+    when
+        IncreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.HIGH)
+    then
+        System.out.println($u.username + " IS AT MAX THREAT LEVEL");
+        insert($u);
+        drools.halt();
+end

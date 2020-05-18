@@ -1,0 +1,64 @@
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.model.Report;
+import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.MatchHistory;
+
+
+declare DecreaseThreat end
+
+rule "Match played without reports and not leaving and no reports and leaving in match history"
+    when
+        MatchEvent($info: matchInfo, $info.report == Report.NONE && $info.finished == true)
+        $u: User()
+        MatchHistory($history: history)
+        not MatchInfo(report != Report.NONE || finished == false) from $history
+    then
+        System.out.println("NO REPORT - NO REPORT IN MATCH HISTORY");
+        insert(new DecreaseThreat());
+end
+
+rule "Decrease threat from high to medium"
+    when
+        DecreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.HIGH)
+    then
+        System.out.println("DECREASING THREAT LEVEL FOR " + $u.username + " TO MEDIUM");
+        $u.setThreatLevel(ThreatLevel.MEDIUM);
+        insert($u);
+        drools.halt();
+end
+
+rule "Decrease threat from medium to low"
+    when
+        DecreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.MEDIUM)
+    then
+        System.out.println("DECREASING THREAT LEVEL FOR " + $u.username + " TO LOW");
+        $u.setThreatLevel(ThreatLevel.LOW);
+        insert($u);
+        drools.halt();
+end
+
+rule "Decrease threat from low to none"
+    when
+        DecreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.LOW)
+    then
+        System.out.println("DECREASING THREAT LEVEL FOR " + $u.username + " TO NONE");
+        $u.setThreatLevel(ThreatLevel.NONE);
+        insert($u);
+        drools.halt();
+end
+
+rule "Decrease threat from none"
+    when
+        DecreaseThreat() and
+        $u: User(threatLevel == ThreatLevel.NONE)
+    then
+        System.out.println($u.username + " IS AT LOWEST THREAT LEVEL");
+        insert($u);
+        drools.halt();
+end
