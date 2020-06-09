@@ -1,0 +1,119 @@
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.model.Report;
+import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.ChatLogAnalyzer;
+import ftn.sbnz.banhammer.model.MatchHistory;
+import ftn.sbnz.banhammer.model.match.event.PlayerFriendlyFire;
+import java.util.List
+
+declare Analyze
+    forWhat: String
+    username: String
+    matchId: Long
+end
+
+declare PunishPlayer
+    forWhat: String
+    username: String
+end
+
+declare IncreaseThreat
+    username: String
+end
+
+rule "Match played with player reported for friendly fire and any report in match history"
+salience 10
+    when
+        $match: MatchEvent($info: matchInfo, $info.report == Report.FRIENDLY_FIRE, handled == false)
+        $u: User(username == $info.userId)
+        $allUserMatches: List(size > 0) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
+        exists(MatchEvent(matchInfo.report != Report.NONE) from $allUserMatches)
+    then
+        System.out.println("FRIENDLY FIRE REPORT - REPORT IN MATCH HISTORY");
+        System.out.println("PERFORMING ANALYSIS FOR FRIENDLY FIRE FOR " + $u.username);
+        $match.setHandled(true);
+        update($match)
+        insert(new Analyze("friendly fire", $u.username, $info.id));
+end
+
+rule "Friendly fire analysis true"
+    when
+        $a: Analyze(forWhat == "friendly fire", $username: username, $matchId: matchId)
+        $u: User(username == $username)
+        $list: List() from collect (PlayerFriendlyFire(matchId == $matchId))
+        Number(intValue > 0) from accumulate(
+                        $p: PlayerFriendlyFire(provoked == false) from $list,
+                        count($p)
+        )
+    then
+        System.out.println("ANALYSIS FOR FRIENDLY FIRE IS TRUE FOR " + $u.username);
+        delete($a);
+        insert(new PunishPlayer("friednly fire", $u.username));
+end
+
+rule "Friednly fire analysis false"
+    when
+        $a: Analyze(forWhat == "friendly fire", $username: username, $matchId: matchId)
+        $u: User(username == $username)
+        $list: List() from collect (PlayerFriendlyFire(matchId == $matchId))
+        Number(intValue == 0) from accumulate(
+                        $p: PlayerFriendlyFire(provoked == false) from $list,
+                        count($p)
+        )
+    then
+        System.out.println("ANALYSIS FOR FRIENDLY FIRE IS FALSE FOR " + $u.username);
+        delete($a);
+        $u.setPunishment(Punishment.NONE);
+        update($u);
+end
+
+rule "Punish for friednly fire threat none"
+    when
+        $p: PunishPlayer(forWhat == "friednly fire", $username: username)
+        $u: User(threatLevel == ThreatLevel.NONE, username == $username)
+    then
+        System.out.println("ISSUING WARNING FOR " + $u.username + " FOR FRIENDLY FIRE");
+        $u.setPunishment(Punishment.WARNING);
+        delete($p);
+        update($u);
+        insert(new IncreaseThreat($u.username));
+end
+
+rule "Punish for friednly fire  threat low"
+    when
+        $p: PunishPlayer(forWhat == "friednly fire", $username: username)
+        $u: User(threatLevel == ThreatLevel.LOW, username == $username)
+    then
+        System.out.println("ISSUING 3 DAY SUSPENSION FOR " + $u.username + " FOR FRIENDLY FIRE");
+        $u.setPunishment(Punishment.SUSPENSION_3_DAYS);
+        delete($p);
+        update($u);
+        insert(new IncreaseThreat($u.username));
+end
+
+rule "Punish for friednly fire  threat medium"
+    when
+        $p: PunishPlayer(forWhat == "friednly fire", $username: username)
+        $u: User(threatLevel == ThreatLevel.MEDIUM, username == $username)
+    then
+        System.out.println("ISSUING 7 DAY SUSPENSION FOR " + $u.username + " FOR FRIENDLY FIRE");
+        $u.setPunishment(Punishment.SUSPENSION_7_DAYS);
+        delete($p);
+        update($u);
+        insert(new IncreaseThreat($u.username));
+end
+
+rule "Punish for friednly fire  threat high"
+    when
+        $p: PunishPlayer(forWhat == "friednly fire", $username: username)
+        $u: User(threatLevel == ThreatLevel.HIGH, username == $username)
+    then
+        System.out.println("ISSUING PERMANENT SUSPENSION FOR " + $u.username + " FOR FRIENDLY FIRE");
+        $u.setPunishment(Punishment.PERMANENT_SUSPENSION);
+        delete($p);
+        update($u);
+        insert(new IncreaseThreat($u.username));
+end
