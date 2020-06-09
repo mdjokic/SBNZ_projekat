@@ -12,11 +12,11 @@ declare DecreaseThreat
 end
 
 rule "Match played without reports and not leaving and no reports and leaving in match history"
-salience 42
+salience 41
     when
         $match: MatchEvent($info: matchInfo, $info.report == Report.NONE && $info.finished == true, handled == false)
         $u: User(username == $info.userId)
-        $allUserMatches: List(size > 0) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
+        $allUserMatches: List(size == 5) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
         not(exists(MatchEvent(matchInfo.report != Report.NONE || matchInfo.finished == false) from $allUserMatches))
     then
         System.out.println("NO REPORT - NO REPORT IN MATCH HISTORY");

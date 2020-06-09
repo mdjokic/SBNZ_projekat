@@ -2,7 +2,6 @@ package sbnz.integracija;
 import ftn.sbnz.banhammer.model.MatchEvent;
 import ftn.sbnz.banhammer.model.MatchInfo;
 import java.util.List
-dialect  "mvel"
 
 rule "optimizeMatchHistory"
 salience 42
