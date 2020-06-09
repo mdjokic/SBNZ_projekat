@@ -6,7 +6,6 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -18,16 +17,18 @@ public class MatchInfo {
     @Id
     @GeneratedValue(generator = "matches_seq_gen")
     @SequenceGenerator(name = "matches_seq_gen", sequenceName = "matches_id_seq", initialValue = 1, allocationSize = 1)
-    private Long id;
-    private String userId;
-    private boolean finished;
-    private String chatLog;
-    private Date timestamp;
+    public Long id;
+    public String userId;
+    public boolean finished;
+    public String chatLog;
+    public Date timestamp;
     @Enumerated(EnumType.STRING)
-    private Report report;
+    public Report report;
 
     public MatchInfo(){
-
+        this.chatLog = "";
+        this.timestamp = new Date();
+        this.report = Report.NONE;
     }
 
     public MatchInfo(String userId, boolean finished,

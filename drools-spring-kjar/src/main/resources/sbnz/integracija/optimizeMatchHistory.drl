@@ -1,0 +1,16 @@
+package sbnz.integracija;
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import java.util.List
+dialect  "mvel"
+
+rule "optimizeMatchHistory"
+salience 42
+    when
+     $match: MatchEvent($info: matchInfo)
+     $allUserMatches: List(size > 5) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
+     $earliestMatch: MatchEvent() from $allUserMatches.get(0)
+     then
+        System.out.println("Optimizing match history for user " + $info.getUserId());
+        delete($earliestMatch);
+end

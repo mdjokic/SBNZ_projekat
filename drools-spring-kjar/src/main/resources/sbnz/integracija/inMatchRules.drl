@@ -1,0 +1,99 @@
+package sbnz.integracija;
+import ftn.sbnz.banhammer.model.match.event.PlayerFriendlyFire;
+import ftn.sbnz.banhammer.model.match.event.PlayerFlame;
+import ftn.sbnz.banhammer.model.match.event.FriendlyFire;
+
+rule "Two friendly fire and then one player friendly fire"
+    when
+        $fp: PlayerFriendlyFire(provoked == false, $matchId: matchId)
+        $ff1: FriendlyFire(this before[0s, 3s] $fp, matchId == $matchId)
+        $ff2: FriendlyFire(this before[0s, 3s] $ff1, matchId == $matchId)
+    then
+        System.out.println("Two friendly fire and then one player friendly fire");
+        System.out.println();
+        $fp.setProvoked(true);
+        update($fp);
+end
+
+rule "Two friendly fire and then one player flame"
+    when
+        $fpl: PlayerFlame(provoked == false, $matchId: matchId)
+        not(PlayerFlame(this before[0s, 3s] $fpl, matchId == $matchId))
+        not(PlayerFriendlyFire(this before[0s, 3s] $fpl, matchId == $matchId))
+        $ff1: FriendlyFire(this before[0s, 3s] $fpl, matchId == $matchId)
+        $ff2: FriendlyFire(this before[0s, 3s] $ff1, matchId == $matchId)
+    then
+        System.out.println("Two friendly fire and then one player flame");
+        System.out.println();
+        $fpl.setProvoked(true);
+        update($fpl);
+end
+
+
+rule "Two friendly fire and then one player flame and one player friendly fire"
+    when
+        $fp: PlayerFriendlyFire(provoked == false, $matchId: matchId)
+        $fpl: PlayerFlame(provoked == false, this before[0s, 3s] $fp, matchId == $matchId)
+        not(PlayerFlame(this before[0s, 3s] $fpl, matchId == $matchId))
+        not(PlayerFriendlyFire(this before[0s, 3s] $fpl, matchId == $matchId))
+        $ff1: FriendlyFire(this before[0s, 3s] $fpl, matchId == $matchId)
+        $ff2: FriendlyFire(this before[0s, 3s] $ff1, matchId == $matchId)
+    then
+        System.out.println("Two friendly fire and then one player flame and one player friendly fire");
+        System.out.println();
+        $fp.setProvoked(true);
+        $fpl.setProvoked(true);
+        update($fp);
+        update($fpl);
+end
+
+rule "Two friendly fire and then one player friendly fire and one player flame"
+    when
+        $fpl: PlayerFlame(provoked == false, $matchId: matchId)
+        $fp: PlayerFriendlyFire(provoked == false, this before[0s, 3s] $fpl, matchId == $matchId)
+        not(PlayerFlame(this before[0s, 3s] $fp, matchId == $matchId))
+        not(PlayerFriendlyFire(this before[0s, 3s] $fp, matchId == $matchId))
+        $ff1: FriendlyFire(this before[0s, 3s] $fp, matchId == $matchId)
+        $ff2: FriendlyFire(this before[0s, 3s] $ff1, matchId == $matchId)
+    then
+        System.out.println("Two friendly fire and then one player friendly fire and one player flame");
+        System.out.println();
+        $fp.setProvoked(true);
+        $fpl.setProvoked(true);
+        update($fp);
+        update($fpl);
+end
+
+rule "Two friendly fire and then two player friendly fire"
+    when
+        $fp2: PlayerFriendlyFire(provoked == false, $matchId: matchId)
+        $fp1: PlayerFriendlyFire(provoked == false, this before[0s, 3s] $fp2, matchId == $matchId)
+        not(PlayerFlame(this before[0s, 3s] $fp1, matchId == $matchId))
+        not(PlayerFriendlyFire(this before[0s, 3s] $fp1, matchId == $matchId))
+        $ff1: FriendlyFire(this before[0s, 3s] $fp1, matchId == $matchId)
+        $ff2: FriendlyFire(this before[0s, 3s] $ff1, matchId == $matchId)
+    then
+        System.out.println("Two friendly fire and then two player friendly fire");
+        System.out.println();
+        $fp2.setProvoked(true);
+        $fp1.setProvoked(true);
+        update($fp2);
+        update($fp1);
+end
+
+rule "Two friendly fire and then two player flame"
+    when
+        $fpl2: PlayerFlame(provoked == false, $matchId: matchId)
+        $fpl1: PlayerFlame(provoked == false, this before[0s, 3s] $fpl2, matchId == $matchId)
+        not(PlayerFlame(this before[0s, 3s] $fpl1, matchId == $matchId))
+        not(PlayerFriendlyFire(this before[0s, 3s] $fpl1, matchId == $matchId))
+        $ff1: FriendlyFire(this before[0s, 3s] $fpl1, matchId == $matchId)
+        $ff2: FriendlyFire(this before[0s, 3s] $ff1, matchId == $matchId)
+    then
+        System.out.println("Two friendly fire and then two player flame");
+        System.out.println();
+        $fpl2.setProvoked(true);
+        $fpl1.setProvoked(true);
+        update($fpl2);
+        update($fpl1);
+end
