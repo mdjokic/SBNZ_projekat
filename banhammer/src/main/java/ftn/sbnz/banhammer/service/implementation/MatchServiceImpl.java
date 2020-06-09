@@ -123,23 +123,23 @@ public class MatchServiceImpl implements MatchService {
             clock.advanceTime(1, TimeUnit.SECONDS);
             int action = random.nextInt(100);
             if (action <= 15){
-                Ping ping = new Ping(matchId);
+                Ping ping = new Ping(UUID.randomUUID(), matchId);
                 System.out.println("New ping");
                 kieSession.insert(ping);
             }else if (action <= 30){
-                FriendlyFire ff = new FriendlyFire(matchId);
+                FriendlyFire ff = new FriendlyFire(UUID.randomUUID(), matchId);
                 System.out.println("Friendly fire");
                 kieSession.insert(ff);
             }else if (action <= 40){
-                PlayerFriendlyFire pff = new PlayerFriendlyFire(matchId);
+                PlayerFriendlyFire pff = new PlayerFriendlyFire(UUID.randomUUID(), matchId);
                 System.out.println("Player Friendly fire");
                 kieSession.insert(pff);
             }else if (action <= 50) {
-                PlayerFlame pff = new PlayerFlame(matchId);
+                PlayerFlame pff = new PlayerFlame(UUID.randomUUID(), matchId);
                 System.out.println("Player Friendly flame");
                 kieSession.insert(pff);
             }else if (action <= 55){
-                PlayerHate pfh = new PlayerHate(matchId);
+                PlayerHate pfh = new PlayerHate(UUID.randomUUID(), matchId);
                 System.out.println("Player Friendly hate");
                 kieSession.insert(pfh);
             }else{

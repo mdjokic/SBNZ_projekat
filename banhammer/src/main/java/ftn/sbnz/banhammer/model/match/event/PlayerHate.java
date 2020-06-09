@@ -1,5 +1,6 @@
 package ftn.sbnz.banhammer.model.match.event;
 
+import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
 import org.kie.api.definition.type.Role;
@@ -9,11 +10,14 @@ import org.kie.api.definition.type.Role;
 @Setter
 public class PlayerHate {
 
+    UUID id;
+
     Long matchId;
 
     public PlayerHate(){}
 
-    public PlayerHate(Long matchId){
+    public PlayerHate(UUID id, Long matchId){
+        this.id = id;
         this.matchId = matchId;
     }
 }
