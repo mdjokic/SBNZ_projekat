@@ -4,5 +4,6 @@ public enum Report {
     NONE,
     OFFENSIVE_LANGUAGE,
     HATE_SPEECH,
-    LEAVING_THE_GAME
+    LEAVING_THE_GAME,
+    FRIENDLY_FIRE
 }
