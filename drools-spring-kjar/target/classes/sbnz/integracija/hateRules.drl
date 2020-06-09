@@ -6,13 +6,11 @@ import ftn.sbnz.banhammer.model.Report;
 import ftn.sbnz.banhammer.model.User;
 import ftn.sbnz.banhammer.model.ChatLogAnalyzer;
 import ftn.sbnz.banhammer.model.MatchHistory;
-import ftn.sbnz.banhammer.model.match.event.PlayerHate;
 import java.util.List
 
 declare AnalyzeChatLog
     forWhat: String
     username: String
-    matchId: Long
 end
 
 declare PunishPlayer
@@ -36,37 +34,31 @@ salience 10
         System.out.println("PERFORMING ANALYSIS FOR HATE FOR " + $u.username);
         $match.setHandled(true);
         update($match)
-        insert(new AnalyzeChatLog("hate", $info.userId, $info.id));
+        insert(new AnalyzeChatLog("hate", $info.userId));
 end
 
 rule "Chat log analysis for hate true"
     when
-        $a: AnalyzeChatLog(forWhat == "hate", $username: username, $matchId: matchId)
+        $a: AnalyzeChatLog(forWhat == "hate", $username: username)
+        $c: ChatLogAnalyzer(hate == true)
         $u: User(username == $username)
-        $list: List() from collect (PlayerHate(matchId == $matchId))
-        Number(intValue > 0) from accumulate(
-                        $p: PlayerHate() from $list,
-                        count($p)
-        )
     then
         System.out.println("ANALYSIS FOR HATE IS TRUE FOR " + $u.username);
         delete($a);
+        delete($c);
         insert(new PunishPlayer("hate", $u.username));
 end
 
 rule "Chat log analysis for hate false"
     when
-        $a: AnalyzeChatLog(forWhat == "hate", $username: username, $matchId: matchId)
+        $a: AnalyzeChatLog(forWhat == "hate", $username: username)
+        $c: ChatLogAnalyzer(hate == false)
         $u: User(username == $username)
-        $list: List() from collect (PlayerHate(matchId == $matchId))
-        Number(intValue == 0) from accumulate(
-                        $p: PlayerHate() from $list,
-                        count($p)
-        )
     then
         System.out.println("ANALYSIS FOR HATE IS FALSE FOR " + $u.username);
         $u.setPunishment(Punishment.NONE);
         delete($a);
+        delete($c);
         insert($u);
 end
 
