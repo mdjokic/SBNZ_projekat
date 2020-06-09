@@ -3,14 +3,13 @@ package ftn.sbnz.banhammer.unit;
 import ftn.sbnz.banhammer.model.*;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
-import org.kie.api.event.rule.AgendaEventListener;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 
-public class FlameRulesTest {
+public class AfkRulesTest {
 
 
     private KieSession createKieSession(){
