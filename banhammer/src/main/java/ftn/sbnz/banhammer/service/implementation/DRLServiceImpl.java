@@ -22,9 +22,6 @@ public class DRLServiceImpl implements DRLService {
     @Autowired
     DRLRepository drlRepository;
 
-    @Autowired
-    KieContainer kieContainer;
-
     private void cleanInstall () throws RuntimeException, MavenInvocationException {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile( new File( "..\\drools-spring-kjar\\pom.xml" ) );

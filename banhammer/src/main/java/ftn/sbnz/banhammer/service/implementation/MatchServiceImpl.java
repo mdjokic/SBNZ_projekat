@@ -37,7 +37,7 @@ public class MatchServiceImpl implements MatchService {
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
 
-    private final int  matchLength = 10;
+    private final int  matchLength = 16;
 
     @Override
     public MatchInfo findOne(Long id) {
