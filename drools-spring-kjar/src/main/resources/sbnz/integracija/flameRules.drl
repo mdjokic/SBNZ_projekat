@@ -6,11 +6,13 @@ import ftn.sbnz.banhammer.model.Report;
 import ftn.sbnz.banhammer.model.User;
 import ftn.sbnz.banhammer.model.ChatLogAnalyzer;
 import ftn.sbnz.banhammer.model.MatchHistory;
+import ftn.sbnz.banhammer.model.match.event.PlayerFlame;
 import java.util.List
 
 declare AnalyzeChatLog
     forWhat: String
     username: String
+    matchId: Long
 end
 
 declare PunishPlayer
@@ -34,30 +36,36 @@ salience 10
         System.out.println("PERFORMING ANALYSIS FOR FLAME FOR " + $u.username);
         $match.setHandled(true);
         update($match)
-        insert(new AnalyzeChatLog("flame", $u.username));
+        insert(new AnalyzeChatLog("flame", $u.username, $info.id));
 end
 
 rule "Chat log analysis for flame true"
     when
-        $a: AnalyzeChatLog(forWhat == "flame", $username: username)
-        $c: ChatLogAnalyzer(flame == true)
+        $a: AnalyzeChatLog(forWhat == "flame", $username: username, $matchId: matchId)
         $u: User(username == $username)
+        $list: List() from collect (PlayerFlame(matchId == $matchId))
+        Number(intValue > 1) from accumulate(
+                        $p: PlayerFlame(provoked == false) from $list,
+                        count($p)
+        )
     then
         System.out.println("ANALYSIS FOR FLAME IS TRUE FOR " + $u.username);
         delete($a);
-        delete($c);
         insert(new PunishPlayer("flame", $u.username));
 end
 
 rule "Chat log analysis for flame false"
     when
-        $a: AnalyzeChatLog(forWhat == "flame", $username: username)
-        $c: ChatLogAnalyzer(flame == false)
+        $a: AnalyzeChatLog(forWhat == "flame", $username: username, $matchId: matchId)
         $u: User(username == $username)
+        $list: List() from collect (PlayerFlame(matchId == $matchId))
+        Number(intValue <= 1) from accumulate(
+                    $p: PlayerFlame(provoked == false) from $list,
+                    count($p)
+        )
     then
         System.out.println("ANALYSIS FOR FLAME IS FALSE FOR " + $u.username);
         delete($a);
-        delete($c);
         $u.setPunishment(Punishment.NONE);
         update($u);
 end

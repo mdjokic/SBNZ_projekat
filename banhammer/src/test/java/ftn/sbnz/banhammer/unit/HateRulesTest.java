@@ -1,10 +1,17 @@
 package ftn.sbnz.banhammer.unit;
 
 import ftn.sbnz.banhammer.model.*;
+import ftn.sbnz.banhammer.model.match.event.Ping;
+import ftn.sbnz.banhammer.model.match.event.PlayerFlame;
+import ftn.sbnz.banhammer.model.match.event.PlayerHate;
+import org.drools.core.time.SessionPseudoClock;
 import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -122,11 +129,22 @@ public class HateRulesTest {
         kieSession.insert(matchEvent3);
         kieSession.fireAllRules();
 
+        Long matchId = 4L;
+        SessionPseudoClock clock = kieSession.getSessionClock();
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        PlayerHate ph = new PlayerHate(UUID.randomUUID(), matchId);
+        kieSession.insert(ph);
+
+        int rulesActivated = kieSession.fireAllRules();
+        assertThat(rulesActivated).isEqualTo(0);
+        clock.advanceTime(4, TimeUnit.SECONDS);
+
         // insert fourth match
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
-        int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(4);
+        int rulesActivated2 = kieSession.fireAllRules();
+        assertThat(rulesActivated2).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_7_DAYS);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -209,11 +227,22 @@ public class HateRulesTest {
         kieSession.insert(matchEvent3);
         kieSession.fireAllRules();
 
+        Long matchId = 4L;
+        SessionPseudoClock clock = kieSession.getSessionClock();
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        PlayerHate ph = new PlayerHate(UUID.randomUUID(), matchId);
+        kieSession.insert(ph);
+
+        int rulesActivated = kieSession.fireAllRules();
+        assertThat(rulesActivated).isEqualTo(0);
+        clock.advanceTime(4, TimeUnit.SECONDS);
+
         // insert fourth match
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
-        int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(4);
+        int rulesActivated2 = kieSession.fireAllRules();
+        assertThat(rulesActivated2).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.PERMANENT_SUSPENSION);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
     }
@@ -253,12 +282,89 @@ public class HateRulesTest {
         kieSession.insert(matchEvent3);
         kieSession.fireAllRules();
 
+        Long matchId = 4L;
+        SessionPseudoClock clock = kieSession.getSessionClock();
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        PlayerHate ph = new PlayerHate(UUID.randomUUID(), matchId);
+        kieSession.insert(ph);
+
+        int rulesActivated = kieSession.fireAllRules();
+        assertThat(rulesActivated).isEqualTo(0);
+        clock.advanceTime(4, TimeUnit.SECONDS);
+
         // insert fourth match
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
-        int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(4);
+        int rulesActivated2 = kieSession.fireAllRules();
+        assertThat(rulesActivated2).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.PERMANENT_SUSPENSION);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.MEDIUM);
+    }
+
+    @Test
+    public void reportForHateAndReportInLastFiveMatchesAndChatLogTrueMultipleEventsBefore(){
+        KieSession kieSession = createKieSession();
+        User matchUser = createUser();
+
+        MatchInfo matchInfo1 = new MatchInfo(1L, matchUser.getUsername(), true, Report.LEAVING_THE_GAME);
+        MatchInfo matchInfo2 = new MatchInfo(2L, matchUser.getUsername(), true, Report.NONE);
+        MatchInfo matchInfo3 = new MatchInfo(3L, matchUser.getUsername(), true, Report.NONE);
+        MatchInfo matchInfo4 = new MatchInfo(4L, matchUser.getUsername(), true, Report.HATE_SPEECH);
+        MatchEvent matchEvent1 = new MatchEvent(matchInfo1);
+        MatchEvent matchEvent2 = new MatchEvent(matchInfo2);
+        MatchEvent matchEvent3 = new MatchEvent(matchInfo3);
+        MatchEvent matchEvent4 = new MatchEvent(matchInfo4);
+
+        // insert chat log analysis
+        ChatLogAnalyzer chatLogAnalyzer = new ChatLogAnalyzer();
+        chatLogAnalyzer.setHate(true);
+        kieSession.insert(chatLogAnalyzer);
+
+        // insert first match
+        kieSession.insert(matchUser);
+        kieSession.insert(matchEvent1);
+        kieSession.fireAllRules();
+
+        // insert second match
+        kieSession.insert(matchUser);
+        kieSession.insert(matchEvent2);
+        kieSession.fireAllRules();
+
+        // insert third match
+        kieSession.insert(matchUser);
+        kieSession.insert(matchEvent3);
+        kieSession.fireAllRules();
+
+        Long matchId = 4L;
+        SessionPseudoClock clock = kieSession.getSessionClock();
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        Ping p = new Ping(UUID.randomUUID(), matchId);
+        kieSession.insert(p);
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        Ping p2 = new Ping(UUID.randomUUID(), matchId);
+        kieSession.insert(p2);
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        Ping p3 = new Ping(UUID.randomUUID(), matchId);
+        kieSession.insert(p3);
+
+        clock.advanceTime(1, TimeUnit.SECONDS);
+        PlayerHate ph = new PlayerHate(UUID.randomUUID(), matchId);
+        kieSession.insert(ph);
+
+        int rulesActivated = kieSession.fireAllRules();
+        assertThat(rulesActivated).isEqualTo(0);
+        clock.advanceTime(4, TimeUnit.SECONDS);
+
+        // insert fourth match
+        kieSession.insert(matchUser);
+        kieSession.insert(matchEvent4);
+        int rulesActivated2 = kieSession.fireAllRules();
+        assertThat(rulesActivated2).isEqualTo(4);
+        assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_7_DAYS);
+        assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
 }
