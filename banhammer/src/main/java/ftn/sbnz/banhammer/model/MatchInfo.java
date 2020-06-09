@@ -31,6 +31,15 @@ public class MatchInfo {
         this.report = Report.NONE;
     }
 
+    public MatchInfo(Long id, String userId, boolean finished, Report report){
+        this.id = id;
+        this.userId = userId;
+        this.finished = finished;
+        this.report = report;
+        this.chatLog = "";
+        this.timestamp = new Date();
+    }
+
     public MatchInfo(String userId, boolean finished,
                      String chatLog, Date timestamp, Report report) {
         this.userId = userId;

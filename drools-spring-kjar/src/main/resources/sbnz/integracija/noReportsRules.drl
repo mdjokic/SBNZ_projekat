@@ -14,7 +14,21 @@ rule "Match played with reports but no reports and leaving in match history"
         $allUserMatches: List(size >= 0) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
         not(exists(MatchEvent(matchInfo.report != Report.NONE || matchInfo.finished == false) from $allUserMatches))
     then
-        System.out.println("REPORT - NO REPORT IN MATCH HISTORY");
+        System.out.println("REPORT - NO REPORT AND NO LEAVING IN MATCH HISTORY");
+        $u.setPunishment(Punishment.NONE);
+        $match.setHandled(true);
+        update($match)
+        update($u);
+end
+
+rule "Match finished with leaving but no reports and leaving in match history"
+    when
+        $match: MatchEvent($info: matchInfo, $info.finished == false, handled == false)
+        $u: User(username == $info.userId)
+        $allUserMatches: List(size >= 0) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
+        not(exists(MatchEvent(matchInfo.report != Report.NONE || matchInfo.finished == false) from $allUserMatches))
+    then
+        System.out.println("Leaving - NO REPORT AND NO LEAVING IN MATCH HISTORY");
         $u.setPunishment(Punishment.NONE);
         $match.setHandled(true);
         update($match)
@@ -23,7 +37,7 @@ end
 
 rule "Match played with no reports and no leaving"
     when
-        $match: MatchEvent($info: matchInfo, $info.report == Report.NONE, handled == false)
+        $match: MatchEvent($info: matchInfo, $info.report == Report.NONE, $info.finished == true, handled == false)
         $u: User(username == $info.userId)
     then
         System.out.println("NO REPORT");
