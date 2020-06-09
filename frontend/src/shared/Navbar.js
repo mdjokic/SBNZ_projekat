@@ -13,6 +13,9 @@ const Navbar = () => {
                     <Link className="navbar-item" to="/users">
                         Users
                     </Link>
+                    <Link className="navbar-item" to="/rules">
+                        Custom rules
+                    </Link>
                 </div>
             </div>
         </nav>
