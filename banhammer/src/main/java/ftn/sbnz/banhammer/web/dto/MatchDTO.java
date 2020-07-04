@@ -14,7 +14,7 @@ public class MatchDTO {
 
     private String usernameId;
 
-    private boolean finished;
+    private Boolean finished;
 
     private String chatLog;
 
@@ -26,17 +26,20 @@ public class MatchDTO {
 
     private ThreatLevel threatLevel;
 
+    private double kd;
+
     public MatchDTO(){}
 
     public MatchDTO(MatchInfo matchInfo, User user){
         this.id = matchInfo.getId();
         this.usernameId = user.getUsername();
-        this.finished = matchInfo.isFinished();
+        this.finished = matchInfo.getFinished();
         this.chatLog = matchInfo.getChatLog();
         this.timestamp = matchInfo.getTimestamp();
         this.report = matchInfo.getReport();
-        this.punishment = user.getPunishment();
-        this.threatLevel = user.getThreatLevel();
+        this.punishment = matchInfo.getPunishment();
+        this.threatLevel = matchInfo.getThreatLevel();
+        this.kd = matchInfo.getKdRatio();
 
     }
 }

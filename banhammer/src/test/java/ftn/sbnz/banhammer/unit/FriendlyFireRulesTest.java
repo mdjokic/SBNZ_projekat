@@ -59,7 +59,7 @@ public class FriendlyFireRulesTest {
         kieSession.insert(matchUser);
         rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(4);
+        assertThat(rulesActivated).isEqualTo(5);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
     }
@@ -102,7 +102,7 @@ public class FriendlyFireRulesTest {
         kieSession.insert(matchUser);
         rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.NONE);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -155,7 +155,7 @@ public class FriendlyFireRulesTest {
         kieSession.insert(matchUser);
         rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(4);
+        assertThat(rulesActivated).isEqualTo(5);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.MEDIUM);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_3_DAYS);
     }
@@ -191,7 +191,7 @@ public class FriendlyFireRulesTest {
         kieSession.insert(matchUser);
         rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(4);
+        assertThat(rulesActivated).isEqualTo(5);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_7_DAYS);
     }
@@ -228,7 +228,7 @@ public class FriendlyFireRulesTest {
         kieSession.insert(matchUser);
         rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(4);
+        assertThat(rulesActivated).isEqualTo(5);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.PERMANENT_SUSPENSION);
     }
@@ -263,7 +263,7 @@ public class FriendlyFireRulesTest {
         kieSession.insert(matchUser);
         rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(4);
+        assertThat(rulesActivated).isEqualTo(5);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
     }

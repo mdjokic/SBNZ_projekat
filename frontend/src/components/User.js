@@ -47,7 +47,9 @@ const User = () => {
                                     <th>Username</th>
                                     <th>Timestamp</th>
                                     <th>Finished</th>
+                                    <th>K/D</th>
                                     <th>Report</th>
+                                    <th>Punishment</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -58,7 +60,9 @@ const User = () => {
                                             <td>{match.userId}</td>
                                             <td>{moment(match.timestamp).format('DD.MM.YYYY HH:mm:ss')}</td>
                                             <td>{match.finished ? 'FINISHED' : 'LEFT'}</td>
+                                            <td>{match.kdRatio}</td>
                                             <td>{match.report}</td>
+                                            <td>{match.punishment}</td>
                                         </tr>)
                                 }
                             </tbody>

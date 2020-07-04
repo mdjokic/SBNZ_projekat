@@ -104,6 +104,7 @@ const Dashboard = () => {
                                                 <th>Username</th>
                                                 <th>Date</th>
                                                 <th>Finished</th>
+                                                <th>K/D</th>
                                                 <th>Report</th>
                                                 <th>Threat level</th>
                                                 <th>Punishment</th>
@@ -116,6 +117,7 @@ const Dashboard = () => {
                                                     <td>{match.usernameId}</td>
                                                     <td>{moment(match.timestamp).format('DD.MM.YYYY HH:mm:ss')}</td>
                                                     <td>{String(match.finished)}</td>
+                                                    <td>{match.kd}</td>
                                                     <td>{match.report}</td>
                                                     <td>{match.threatLevel}</td>
                                                     <td>{match.punishment}</td>

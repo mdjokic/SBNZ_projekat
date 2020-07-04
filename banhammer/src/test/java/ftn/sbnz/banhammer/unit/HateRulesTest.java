@@ -90,7 +90,7 @@ public class HateRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(1);
+        assertThat(rulesActivated).isEqualTo(2);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.NONE);
     }
@@ -144,7 +144,7 @@ public class HateRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated2 = kieSession.fireAllRules();
-        assertThat(rulesActivated2).isEqualTo(4);
+        assertThat(rulesActivated2).isEqualTo(5);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_7_DAYS);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -187,7 +187,7 @@ public class HateRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.NONE);
     }
@@ -242,7 +242,7 @@ public class HateRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated2 = kieSession.fireAllRules();
-        assertThat(rulesActivated2).isEqualTo(4);
+        assertThat(rulesActivated2).isEqualTo(5);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.PERMANENT_SUSPENSION);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
     }
@@ -297,7 +297,7 @@ public class HateRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated2 = kieSession.fireAllRules();
-        assertThat(rulesActivated2).isEqualTo(4);
+        assertThat(rulesActivated2).isEqualTo(5);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.PERMANENT_SUSPENSION);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.MEDIUM);
     }
@@ -363,7 +363,7 @@ public class HateRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated2 = kieSession.fireAllRules();
-        assertThat(rulesActivated2).isEqualTo(4);
+        assertThat(rulesActivated2).isEqualTo(5);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_7_DAYS);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }

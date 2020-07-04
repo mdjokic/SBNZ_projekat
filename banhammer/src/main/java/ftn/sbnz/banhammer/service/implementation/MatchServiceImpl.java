@@ -83,8 +83,6 @@ public class MatchServiceImpl implements MatchService {
             simulateMatchPlaying(matchInfo);
             kieSession.fireAllRules();
 
-            randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
-
             ChatLogAnalyzer  chatLogAnalyzer = new ChatLogAnalyzer();
 
             kieSession.insert(new MatchEvent(randomMatchInfo));
@@ -98,12 +96,15 @@ public class MatchServiceImpl implements MatchService {
                 if (user.getUsername().equals(randomMatchInfo.getUserId())){
                     break;
                 }
+            matchInfoRepository.save(randomMatchInfo);
             }
 
             MatchDTO matchDTO = new MatchDTO(randomMatchInfo, user);
             simpMessagingTemplate.convertAndSend("/topic/messages", matchDTO);
 
             userRepository.save(user);
+            randomMatchInfo.setThreatLevel(user.getThreatLevel());
+            randomMatchInfo.setPunishment(user.getPunishment());
             matchInfoRepository.save(randomMatchInfo);
             System.out.println();
         };
@@ -235,6 +236,9 @@ public class MatchServiceImpl implements MatchService {
         matchInfo.setReport(randomReport);
 
         matchInfo.setKdRatio(random.nextDouble() * 10);
+        if(matchInfo.getKdRatio() == 0){
+            matchInfo.setKdRatio(1.0);
+        }
 
         return matchInfo;
     }

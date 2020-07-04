@@ -106,7 +106,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -143,7 +143,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -180,7 +180,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent4);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -240,7 +240,7 @@ public class AfkRulesTest {
         kieSession.insert(matchEvent7);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.NONE);
     }
@@ -262,7 +262,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent2);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -285,7 +285,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent2);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.WARNING);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
     }
@@ -309,7 +309,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent2);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_3_DAYS);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.MEDIUM);
     }
@@ -333,7 +333,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent2);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.SUSPENSION_7_DAYS);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
     }
@@ -357,7 +357,7 @@ public class AfkRulesTest {
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent2);
         int rulesActivated = kieSession.fireAllRules();
-        assertThat(rulesActivated).isEqualTo(3);
+        assertThat(rulesActivated).isEqualTo(4);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.PERMANENT_SUSPENSION);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
     }

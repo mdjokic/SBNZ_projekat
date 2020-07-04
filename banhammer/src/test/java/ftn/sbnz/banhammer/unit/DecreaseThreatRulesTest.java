@@ -70,7 +70,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent6);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.MEDIUM);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -122,7 +122,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent6);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -175,7 +175,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent6);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.LOW);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -228,7 +228,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent6);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.NONE);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -282,7 +282,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent6);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(1);
+        assertThat(rulesActivated).isEqualTo(2);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -329,7 +329,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent5);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(1);
+        assertThat(rulesActivated).isEqualTo(2);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.HIGH);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }
@@ -383,7 +383,7 @@ public class DecreaseThreatRulesTest {
         kieSession.insert(matchEvent6);
         int rulesActivated = kieSession.fireAllRules();
 
-        assertThat(rulesActivated).isEqualTo(2);
+        assertThat(rulesActivated).isEqualTo(3);
         assertThat(matchUser.getThreatLevel()).isEqualTo(ThreatLevel.NONE);
         assertThat(matchUser.getPunishment()).isEqualTo(Punishment.NONE);
     }

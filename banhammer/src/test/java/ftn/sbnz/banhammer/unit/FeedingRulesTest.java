@@ -50,7 +50,7 @@ public class FeedingRulesTest {
 
         assertThat(rulesActivated).isEqualTo(2);
         assertThat(matchEvent3.isFeedingHandled()).isTrue();
-        assertThat(matchInfo3.isPotentialFeeding()).isTrue();
+        assertThat(matchInfo3.getPotentialFeeding()).isTrue();
     }
 
     @Test
@@ -81,7 +81,7 @@ public class FeedingRulesTest {
 
         assertThat(rulesActivated).isEqualTo(2);
         assertThat(matchEvent3.isFeedingHandled()).isTrue();
-        assertThat(matchInfo3.isPotentialFeeding()).isFalse();
+        assertThat(matchInfo3.getPotentialFeeding()).isFalse();
     }
 
     @Test
@@ -97,8 +97,8 @@ public class FeedingRulesTest {
         int rulesActivated = kieSession.fireAllRules();
 
         assertThat(rulesActivated).isEqualTo(1);
-        assertThat(matchEvent1.isFeedingHandled()).isTrue();
-        assertThat(matchInfo1.isPotentialFeeding()).isFalse();
+        assertThat(matchEvent1.isFeedingHandled()).isFalse();
+        assertThat(matchInfo1.getPotentialFeeding()).isFalse();
     }
 
     @Test
@@ -122,7 +122,7 @@ public class FeedingRulesTest {
 
         assertThat(rulesActivated).isEqualTo(2);
         assertThat(matchEvent2.isFeedingHandled()).isTrue();
-        assertThat(matchInfo2.isPotentialFeeding()).isFalse();
+        assertThat(matchInfo2.getPotentialFeeding()).isFalse();
     }
 
 }
