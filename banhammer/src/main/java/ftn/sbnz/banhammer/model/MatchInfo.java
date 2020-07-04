@@ -2,6 +2,7 @@ package ftn.sbnz.banhammer.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.time.DateUtils;
 import org.kie.api.definition.type.Role;
 import org.kie.api.definition.type.Timestamp;
 
@@ -127,6 +128,12 @@ public class MatchInfo {
 
     public int getFinishedInt(){
         return (this.finished) ? 1 : 0;
+    }
+
+    public Date minusMonths(int months){
+        Date newDate = new Date();
+        newDate = DateUtils.addMonths(newDate, months * (-1));
+        return newDate;
     }
 
 

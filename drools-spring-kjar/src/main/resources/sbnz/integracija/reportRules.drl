@@ -1,0 +1,60 @@
+package sbnz.integracija;
+dialect  "mvel"
+
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.User;
+import ftn.sbnz.banhammer.model.ReportUsers;
+import ftn.sbnz.banhammer.model.Punishment;
+import ftn.sbnz.banhammer.model.ThreatLevel;
+import ftn.sbnz.banhammer.utils.DateUtil;
+
+import java.util.List;
+import java.util.Date;
+
+rule "All players in last 3 months with more than 3 punishments committed within seven days of last punishment"
+agenda-group "match_report_1"
+    when
+        $user: User($username: username)
+        $reportUsers: ReportUsers()
+        $matchesList : List() from collect(MatchInfo(userId == $username, punishment != Punishment.NONE,
+                                                        $t: timestamp, $t.after(DateUtil.minusMonths(3))))
+        $count: Number(intValue >= 4) from accumulate(
+                                      $m1: MatchInfo($t1: timestamp) from $matchesList and
+                                      $m2: MatchInfo($t2: timestamp, DateUtil.daysBetween($t1, $t2) <= 7, $t1.after($t2)) from $matchesList and
+                                      not MatchInfo($t3: timestamp, $t1.after($t3), $t2.before($t3)) from $matchesList,
+                                      count($m1))
+    then
+        System.out.println($username + " in last 3 months had more than 3 punishments committed within seven days of last punishment");
+        $reportUsers.users.add($user);
+end
+
+rule "Most declining players in last 2 months"
+agenda-group "match_report_2"
+    when
+        $user: User($username: username)
+        $reportUsers: ReportUsers()
+        $matchesList : List() from collect(MatchInfo(userId == $username, $t: timestamp, $t.after(DateUtil.minusMonths(2))))
+        $m1: MatchInfo(threatLevel == ThreatLevel.NONE) from $matchesList
+        $m2: MatchInfo(threatLevel == ThreatLevel.HIGH, this after $m1) from $matchesList
+        not MatchInfo(punishment == Punishment.NONE) from $matchesList
+    then
+        System.out.println($username + " declined in last 2 months");
+        $reportUsers.users.add($user);
+end
+
+rule "Most improving players in last 2 months"
+agenda-group "match_report_3"
+    when
+        $user: User($username: username)
+        $reportUsers: ReportUsers()
+        $matchesList : List() from collect(MatchInfo(userId == $username, $t: timestamp, $t.after(DateUtil.minusMonths(2))))
+        $m1: MatchInfo(threatLevel == ThreatLevel.NONE) from $matchesList
+        $m2: MatchInfo(threatLevel == ThreatLevel.HIGH, this before $m1) from $matchesList
+        not MatchInfo(punishment != Punishment.NONE) from $matchesList
+    then
+        System.out.println($username + " improved in last 2 months");
+        $reportUsers.users.add($user);
+end
+
+
+

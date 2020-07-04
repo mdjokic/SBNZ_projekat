@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.kie.api.KieServices;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
-
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
