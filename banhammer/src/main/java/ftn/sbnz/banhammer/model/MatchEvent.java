@@ -11,15 +11,18 @@ public class MatchEvent {
     private MatchInfo matchInfo;
 
     private boolean handled;
+    private boolean feedingHandled;
 
     public MatchEvent(){
         super();
         this.handled = false;
+        this.feedingHandled = false;
     }
 
     public MatchEvent(MatchInfo matchInfo){
         this.matchInfo = matchInfo;
         this.handled = false;
+        this.feedingHandled = false;
     }
 
 }

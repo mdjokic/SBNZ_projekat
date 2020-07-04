@@ -1,0 +1,38 @@
+package sbnz.integracija;
+import ftn.sbnz.banhammer.model.MatchEvent;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import java.lang.Math;
+
+
+rule "Match kd is much lower than match history kd"
+    salience (Math.round($averageKd / $kd * 100) + 50)
+    when
+        $match: MatchEvent($info: matchInfo, $kd: matchInfo.kdRatio, handled == false, feedingHandled == false)
+        $allUserMatches: List(size > 0) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
+        $averageKd: Number() from accumulate(
+                                MatchEvent($matchKd: matchInfo.kdRatio)
+                                from $allUserMatches,
+                                average($matchKd)
+        )
+    then
+        System.out.println("KD BELOW AVERAGE " + $averageKd + " " + $kd);
+        $match.setFeedingHandled(true);
+        $info.setPotentialFeeding(true);
+        update($match);
+end
+
+rule "Match kd is in normal bounds of match history kd"
+    salience (Math.round($kd / $averageKd * 100) + 51)
+    when
+        $match: MatchEvent($info: matchInfo, $kd: matchInfo.kdRatio, handled == false, feedingHandled == false)
+        $allUserMatches: List(size > 0) from collect(MatchEvent(this != $match, matchInfo.userId == $info.userId))
+        $averageKd: Number() from accumulate(
+                                MatchEvent($matchKd: matchInfo.kdRatio)
+                                from $allUserMatches,
+                                average($matchKd)
+        )
+    then
+        System.out.println("KD NORMAL " + $averageKd + " " + $kd);
+        $match.setFeedingHandled(true);
+        update($match);
+end

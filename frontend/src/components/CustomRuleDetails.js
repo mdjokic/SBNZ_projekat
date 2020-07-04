@@ -23,7 +23,10 @@ const CustomRuleDetails = () => {
             id: id,
             text: text,
         }
-        Axios.put(`${process.env.REACT_APP_API_URL}/drl`, toPut).then(() => get())
+        Axios.put(`${process.env.REACT_APP_API_URL}/drl`, toPut)
+            .then(() => get())
+            .catch(() => setText('Error in rule'))
+
     }
 
     return (

@@ -79,11 +79,9 @@ public class MatchServiceImpl implements MatchService {
                 return;
             }
             matchInfo = matchInfoRepository.save(matchInfo);
-            simulateMatchPlaying(matchInfo.getId());
-            kieSession.fireAllRules();
             MatchInfo randomMatchInfo = getRandomMatchInfo(matchInfo, finishedChance, noReportChance);
-
-
+            simulateMatchPlaying(matchInfo);
+            kieSession.fireAllRules();
 
             randomMatchInfo = matchInfoRepository.save(randomMatchInfo);
 
@@ -111,7 +109,8 @@ public class MatchServiceImpl implements MatchService {
         };
     }
 
-    private void simulateMatchPlaying(long matchId){
+    private void simulateMatchPlaying(MatchInfo matchInfo){
+        long matchId = matchInfo.getId();
         System.out.println("Match simulation");
         System.out.println("====================================================");
         SessionPseudoClock clock = kieSession.getSessionClock();
@@ -119,35 +118,82 @@ public class MatchServiceImpl implements MatchService {
         long eventTime = new Date().getTime();
         clock.advanceTime( eventTime - currentTime, TimeUnit.MILLISECONDS);
         Random random = new Random();
-        for(int tick=0; tick < matchLength; tick++){
-            clock.advanceTime(1, TimeUnit.SECONDS);
-            int action = random.nextInt(100);
-            if (action <= 15){
-                Ping ping = new Ping(UUID.randomUUID(), matchId);
-                System.out.println("New ping");
-                kieSession.insert(ping);
-            }else if (action <= 30){
-                FriendlyFire ff = new FriendlyFire(UUID.randomUUID(), matchId);
-                System.out.println("Friendly fire");
-                kieSession.insert(ff);
-            }else if (action <= 40){
-                PlayerFriendlyFire pff = new PlayerFriendlyFire(UUID.randomUUID(), matchId);
-                System.out.println("Player Friendly fire");
-                kieSession.insert(pff);
-            }else if (action <= 50) {
-                PlayerFlame pff = new PlayerFlame(UUID.randomUUID(), matchId);
-                System.out.println("Player Friendly flame");
-                kieSession.insert(pff);
-            }else if (action <= 55){
-                PlayerHate pfh = new PlayerHate(UUID.randomUUID(), matchId);
-                System.out.println("Player Friendly hate");
-                kieSession.insert(pfh);
-            }else{
-                System.out.println("");
-            }
-        }
-        System.out.println("====================================================");
 
+        switch (matchInfo.report){
+            case FRIENDLY_FIRE:
+                if(random.nextBoolean()){
+                    unprovoked_ff(matchId, clock);
+                }else{
+                    provoked_ff(matchId, clock);
+                }
+                break;
+            case OFFENSIVE_LANGUAGE:
+                if(random.nextBoolean()){
+                    unprovoked_flame(matchId, clock);
+                }else{
+                    provoked_flame(matchId, clock);
+                }
+                break;
+            case HATE_SPEECH:
+                if(random.nextBoolean()){
+                    unprovoked_hate(matchId, clock);
+                }else{
+                    clock.advanceTime(1, TimeUnit.SECONDS);
+                }
+                break;
+        }
+
+        System.out.println("====================================================");
+        clock.advanceTime(4, TimeUnit.SECONDS);
+
+    }
+
+    private void provoked_ff(long matchId, SessionPseudoClock clock){
+        System.out.println("Provoked Player Friendly fire");
+        for (int i = 0; i < 3; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new Ping(UUID.randomUUID(), matchId));
+        }
+        for (int i = 0; i < 2; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new PlayerFriendlyFire(UUID.randomUUID(), matchId));
+        }
+    }
+
+    private void provoked_flame(long matchId, SessionPseudoClock clock){
+        System.out.println("Provoked Player flame");
+        for (int i = 0; i < 2; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new FriendlyFire(UUID.randomUUID(), matchId));
+        }
+        for (int i = 0; i < 2; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new PlayerFlame(UUID.randomUUID(), matchId));
+        }
+    }
+
+    private void unprovoked_ff(long matchId, SessionPseudoClock clock){
+        System.out.println("Unprovoked Player Friendly fire");
+        for (int i = 0; i < 3; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new PlayerFriendlyFire(UUID.randomUUID(), matchId));
+        }
+    }
+
+    private void unprovoked_hate(long matchId, SessionPseudoClock clock){
+        System.out.println("Unprovoked Player hate");
+        for (int i = 0; i < 2; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new PlayerHate(UUID.randomUUID(), matchId));
+        }
+    }
+
+    private void unprovoked_flame(long matchId, SessionPseudoClock clock){
+        System.out.println("Unprovoked Player flame");
+        for (int i = 0; i < 3; i++) {
+            clock.advanceTime(1, TimeUnit.SECONDS);
+            kieSession.insert(new PlayerFlame(UUID.randomUUID(), matchId));
+        }
     }
 
     private String getMatchUser(String userId){
@@ -187,6 +233,9 @@ public class MatchServiceImpl implements MatchService {
 
         matchInfo.setFinished(randomFinished);
         matchInfo.setReport(randomReport);
+
+        matchInfo.setKdRatio(random.nextDouble() * 10);
+
         return matchInfo;
     }
 

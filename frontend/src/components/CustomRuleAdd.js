@@ -18,6 +18,7 @@ const CustomRuleAdd = () => {
         setText('Working on it...')
         Axios.post(`${process.env.REACT_APP_API_URL}/drl`, toPost)
             .then(() => history.push('/rules'))
+            .catch(() => setText('Error in rule'))
     }
 
     return (
