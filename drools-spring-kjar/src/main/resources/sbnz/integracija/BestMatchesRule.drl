@@ -1,0 +1,20 @@
+package sbnz.integracija;
+import ftn.sbnz.banhammer.model.Matches;
+import ftn.sbnz.banhammer.model.MatchInfo;
+import ftn.sbnz.banhammer.model.Punishment;
+
+import java.lang.Math;
+import java.util.List;
+
+rule "BestMatchesRule"
+agenda-group "best_matches"
+salience ($punishmentScore * (-20) + $kdScore + $finishedScore * 10)
+    when
+        $match: MatchInfo($punishmentScore: punishment.ordinal(),
+                          $kdScore: Math.round(kdRatio * 10),
+                          $finishedScore: getFinishedInt())
+        $bestMatches: Matches(matchesList.size() < 5)
+    then
+        $bestMatches.matchesList.add($match);
+        System.out.println("Worst matches " + $bestMatches.matchesList);
+end
