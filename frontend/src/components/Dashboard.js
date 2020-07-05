@@ -117,7 +117,7 @@ const Dashboard = () => {
                                                     <td>{match.usernameId}</td>
                                                     <td>{moment(match.timestamp).format('DD.MM.YYYY HH:mm:ss')}</td>
                                                     <td>{String(match.finished)}</td>
-                                                    <td>{match.kd}</td>
+                                                    <td>{Number(match.kd).toFixed(2)}</td>
                                                     <td>{match.report}</td>
                                                     <td>{match.threatLevel}</td>
                                                     <td>{match.punishment}</td>

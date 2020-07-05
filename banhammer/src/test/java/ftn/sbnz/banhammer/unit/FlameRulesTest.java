@@ -110,11 +110,6 @@ public class FlameRulesTest {
         MatchEvent matchEvent3 = new MatchEvent(matchInfo3);
         MatchEvent matchEvent4 = new MatchEvent(matchInfo4);
 
-        // insert chat log analysis
-        ChatLogAnalyzer chatLogAnalyzer = new ChatLogAnalyzer();
-        chatLogAnalyzer.setFlame(true);
-        kieSession.insert(chatLogAnalyzer);
-
         // insert first match
         kieSession.insert(matchUser);
         kieSession.insert(matchEvent1);

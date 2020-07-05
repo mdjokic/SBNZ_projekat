@@ -82,16 +82,13 @@ public class ReportRuleTest {
         clock.advanceTime(1, TimeUnit.SECONDS);
         matchInfo21.setTimestamp(new Date(clock.getCurrentTime()));
 
-
         MatchInfo matchInfo22 = new MatchInfo(6L, matchUser2.getUsername(), true, Punishment.WARNING, 5.0);
         clock.advanceTime(5, TimeUnit.DAYS);
         matchInfo22.setTimestamp(new Date(clock.getCurrentTime()));
 
-
         MatchInfo matchInfo23 = new MatchInfo(7L, matchUser2.getUsername(), true, Punishment.WARNING, 5.0);
         clock.advanceTime(5, TimeUnit.DAYS);
         matchInfo23.setTimestamp(new Date(clock.getCurrentTime()));
-
 
         MatchInfo matchInfo24 = new MatchInfo(8L, matchUser2.getUsername(), true, Punishment.WARNING, 5.0);
         clock.advanceTime(4, TimeUnit.DAYS);
@@ -125,6 +122,7 @@ public class ReportRuleTest {
         int firedRules = kieSession.fireAllRules();
         assertThat(firedRules).isEqualTo(1);
         assertThat(users.users.size()).isEqualTo(1);
+        assertThat(users.users.get(0).username).isEqualTo("Alex");
     }
 
     @Test
@@ -305,5 +303,6 @@ public class ReportRuleTest {
         int firedRules = kieSession.fireAllRules();
         assertThat(firedRules).isEqualTo(1);
         assertThat(users.users.size()).isEqualTo(1);
+        assertThat(users.users.get(0).username).isEqualTo("John");
     }
 }

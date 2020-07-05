@@ -21,7 +21,7 @@ const User = () => {
         <div>
         <Navbar />
         <section className="hero is-info is-fullheight">
-            <div className="container is-centered" style={{ marginTop: 16, width: 640 }}>
+            <div className="container is-centered" style={{ marginTop: 16}}>
                 <div className="box">
                     <div className="columns">
                         <h1 className="title is-3" style={{ color: 'black' }}>User details</h1><br />
@@ -60,7 +60,7 @@ const User = () => {
                                             <td>{match.userId}</td>
                                             <td>{moment(match.timestamp).format('DD.MM.YYYY HH:mm:ss')}</td>
                                             <td>{match.finished ? 'FINISHED' : 'LEFT'}</td>
-                                            <td>{match.kdRatio}</td>
+                                            <td>{Number(match.kdRatio).toFixed(2)}</td>
                                             <td>{match.report}</td>
                                             <td>{match.punishment}</td>
                                         </tr>)

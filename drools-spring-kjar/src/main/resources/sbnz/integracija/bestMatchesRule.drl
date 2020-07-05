@@ -13,7 +13,7 @@ salience ($punishmentScore * (-20) + $kdScore + $finishedScore * 10)
         $match: MatchInfo($punishmentScore: punishment.ordinal(),
                           $kdScore: Math.round(kdRatio * 10),
                           $finishedScore: getFinishedInt())
-        $bestMatches: Matches(matchesList.size() < 5)
+        $bestMatches: Matches()
     then
         $bestMatches.matchesList.add($match);
         System.out.println("Worst matches " + $bestMatches.matchesList);

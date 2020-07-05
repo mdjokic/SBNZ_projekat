@@ -99,12 +99,13 @@ public class MatchServiceImpl implements MatchService {
             matchInfoRepository.save(randomMatchInfo);
             }
 
+            randomMatchInfo.setThreatLevel(user.getThreatLevel());
+            randomMatchInfo.setPunishment(user.getPunishment());
             MatchDTO matchDTO = new MatchDTO(randomMatchInfo, user);
+
             simpMessagingTemplate.convertAndSend("/topic/messages", matchDTO);
 
             userRepository.save(user);
-            randomMatchInfo.setThreatLevel(user.getThreatLevel());
-            randomMatchInfo.setPunishment(user.getPunishment());
             matchInfoRepository.save(randomMatchInfo);
             System.out.println();
         };
@@ -146,7 +147,7 @@ public class MatchServiceImpl implements MatchService {
 
         System.out.println("====================================================");
         clock.advanceTime(4, TimeUnit.SECONDS);
-
+        matchInfo.setTimestamp(new Date(clock.getCurrentTime()));
     }
 
     private void provoked_ff(long matchId, SessionPseudoClock clock){

@@ -16,6 +16,9 @@ const Navbar = () => {
                     <Link className="navbar-item" to="/rules">
                         Custom rules
                     </Link>
+                    <Link className="navbar-item">
+                        Reports
+                    </Link>
                 </div>
             </div>
         </nav>
